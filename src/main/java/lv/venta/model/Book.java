@@ -1,7 +1,5 @@
 package lv.venta.model;
 
-import org.springframework.data.annotation.Id;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +27,7 @@ import lombok.ToString;
 public class Book {
 	@Setter(value = AccessLevel.NONE)
 	@Column(name = "IdB")
-	@Id
+	@jakarta.persistence.Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long idb;
 	
@@ -44,11 +42,9 @@ public class Book {
 	@Column(name = "Rating")
 	private int rating;
 	
-	@NotNull
-	@Column(name = "Condition")
-	private Condition condition;
+	@Column(name = "Condition1")
+	private Condition condition1;
 	
-	@NotNull
 	@Column(name = "Rarity")
 	private Rarity rarity;
 	
@@ -59,8 +55,8 @@ public class Book {
 	
 	@Min(0)
 	@Max(2024)
-	@Column(name = "Year")
-	private long year;
+	@Column(name = "Year1")
+	private long year1;
 	
 	
 	//Linkage
@@ -81,7 +77,7 @@ public class Book {
 	//Functions
 	
 	public void changeCondition(Condition newCondition) {
-		setCondition(newCondition);
+		setCondition1(newCondition);
 	}
 	
 	//Constructor
@@ -90,16 +86,8 @@ public class Book {
 		setTitle(title);
 		setAuthor(author);
 		setRating(rating);
-		setCondition(condition);
+		setCondition1(condition);
 		setRarity(rarity);
 		setQuantity(quantity);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 }

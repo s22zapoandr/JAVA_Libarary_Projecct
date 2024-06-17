@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,29 +26,28 @@ import lombok.ToString;
 @Table(name = "LibraryDepartment")
 @Entity
 public class LibraryDepartment {
-	
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "IdLD")
     private long idLD;
-	
+
     @NotNull
     @Column(name = "Specialization")
     private Genre specialization;
-	
+
     @NotNull
     @Column(name = "WorkingHoursStart")
-    private int workingHoursStart;
+    private int workingHoursStart = 9; // Default start hour
 
     @NotNull
     @Column(name = "WorkingHoursEnd")
-    private int workingHoursEnd;
-	
-	
-	@OneToMany(mappedBy = "libraryDepartment")
+    private int workingHoursEnd = 17; // Default end hour
+
+    @OneToMany(mappedBy = "libraryDepartment")
     private Collection<Book> bookList = new ArrayList<>();
 
-	@OneToMany(mappedBy = "libraryDepartment")
+    @OneToMany(mappedBy = "libraryDepartment")
     private Collection<Book> bookQueueForFutureCheckout = new ArrayList<>();
 
 	
@@ -122,4 +120,3 @@ public class LibraryDepartment {
     }
     
 }
-
