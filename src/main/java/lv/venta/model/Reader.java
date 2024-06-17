@@ -58,10 +58,16 @@ public class Reader {
     }
 
     // Method to add a book to history
-    public void addBookToHistory(Book book) {
-        bookHistory.add(book);
+    public void addBookToHistory(Book book) throws Exception{
+    	if(currentTakenBookList.contains(book) == false) throw new Exception("No such book found in users current book list");
+    	bookHistory.add(book);
     }
 	
+    public void returnBookToLibrary(Book book) throws Exception{
+    	if(bookHistory.contains(book) == false) throw new Exception("No such book found in users book history");
+    	bookHistory.remove(book);
+    }
+    
 	public Reader(String name, String surname){
 		setName(name);
 		setSurname(surname);

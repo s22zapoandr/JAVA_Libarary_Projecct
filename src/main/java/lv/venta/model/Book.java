@@ -39,10 +39,6 @@ public class Book {
 	@Column(name = "Title")
 	private String title;
 	
-	@NotNull
-	@Column(name = "Author")
-	private Author author;
-	
 	@Min(1)
 	@Max(10)
 	@Column(name = "Rating")
@@ -61,6 +57,14 @@ public class Book {
 	@Column(name = "Quantity")
 	private int quantity;
 	
+	@Min(0)
+	@Max(2024)
+	@Column(name = "Year")
+	private long year;
+	
+	
+	//Linkage
+	
 	@ManyToOne
 	@JoinColumn(name = "IdR")
 	private Reader reader;
@@ -69,9 +73,18 @@ public class Book {
 	@JoinColumn(name = "IdLD")
 	private LibraryDepartment libraryDepartment;
 	
+	@ManyToOne
+	@JoinColumn(name = "IdA")
+	private Author author;
+	
+	
+	//Functions
+	
 	public void changeCondition(Condition newCondition) {
 		setCondition(newCondition);
 	}
+	
+	//Constructor
 	
 	public Book(String title, Author author, int rating, Condition condition, Rarity rarity,int quantity) {
 		setTitle(title);

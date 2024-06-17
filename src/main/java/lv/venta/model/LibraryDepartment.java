@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +31,9 @@ public class LibraryDepartment {
     @Column(name = "IdLD")
     private long idl;
 	
+    @NotNull
+    @Column(name = "Specialization")
+    private Genre specialization;
 	
 	@Min(1)
 	@Max(30)
