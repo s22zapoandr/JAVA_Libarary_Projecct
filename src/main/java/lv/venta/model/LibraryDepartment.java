@@ -35,10 +35,6 @@ public class LibraryDepartment {
     @Column(name = "Specialization")
     private Genre specialization;
 	
-	@Min(1)
-	@Max(30)
-	@Column(name = "Emplyees")
-	private long employees;
 	
 	
 	@OneToMany(mappedBy = "libraryDepartment")
