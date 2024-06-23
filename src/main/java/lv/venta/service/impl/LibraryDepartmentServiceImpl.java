@@ -117,7 +117,7 @@ public class LibraryDepartmentServiceImpl implements ILibraryDepartmentService {
         return new LibraryDepartment(specialization);
     }
 	
-	
+	@Override
     @Scheduled(cron = "0 0 0 * * ?")  // Runs every day at midnight
     public void checkOverdueLoans() {
         List<Loan> overdueLoans = loanService.getOverdueLoans();
@@ -130,7 +130,7 @@ public class LibraryDepartmentServiceImpl implements ILibraryDepartmentService {
         }
     }	
 
-    
+	@Override
     public ArrayList<Book> getAllBoksByAuthorId(long IdA) throws Exception{
     	Optional<Author> author = authorRepo.findById(IdA);
     	if(!author.isPresent()) {
