@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ILibraryDepartmentService {
 
-	void validateWorkingHours() throws Exception;
+    void validateWorkingHours() throws Exception;
 	
     void giveBook(Book book, Reader reader) throws Exception;
 
@@ -22,11 +22,11 @@ public interface ILibraryDepartmentService {
 
     LibraryDepartment createLibraryDepartment(Genre specialization);
 
-    List<Book> getAllBooks();
+    ArrayList<Book> getAllBooks();
     
-    List<Book> getBookQueueForFutureCheckout();
+    ArrayList<Book> getBookQueueForFutureCheckout();
 
-	void checkOverdueLoans();
-
-	ArrayList<Book> getAllBoksByAuthorId(long IdA) throws Exception;
+    void checkOverdueLoans();
+	
+    ArrayList<Book> getAllBoksByAuthorId(long IdA) throws Exception;
 }
