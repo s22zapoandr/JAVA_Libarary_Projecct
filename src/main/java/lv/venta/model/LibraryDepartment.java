@@ -1,4 +1,6 @@
+
 package lv.venta.model;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +24,7 @@ import lombok.ToString;
 @Table(name = "LibraryDepartment")
 @Entity
 public class LibraryDepartment {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "IdLD")
@@ -31,24 +33,41 @@ public class LibraryDepartment {
     @NotNull
     @Column(name = "Specialization")
     private Genre specialization;
-
+    
     @NotNull
     @Column(name = "WorkingHoursStart")
-    private int workingHoursStart = 9; // Default start hour
+    private int workingHoursStart; 
 
     @NotNull
     @Column(name = "WorkingHoursEnd")
-    private int workingHoursEnd = 17; // Default end hour
+    private int workingHoursEnd ; 
 
+    @OneToMany(mappedBy = "libraryDepartment")
+    private Collection<Reader> readers = new ArrayList<>(); 
+    
     @OneToMany(mappedBy = "libraryDepartment")
     private Collection<Book> bookList = new ArrayList<>();
 
     @OneToMany(mappedBy = "libraryDepartment")
     private Collection<Book> bookQueueForFutureCheckout = new ArrayList<>();
 
+	
+	
+	//Override
+	public void setWorkingHoursStart() {
+		this.workingHoursStart = 9;
+	}
+	
+	public void setWorkingHoursEnd() {
+		this.workingHoursEnd = 17;
+	}
+	
+    
+    
     public LibraryDepartment(Genre specialization) {
-        this.specialization = specialization;
-        this.workingHoursStart = 9;
-        this.workingHoursEnd = 17;
+    	setWorkingHoursStart();
+    	setWorkingHoursEnd();
+    	setSpecialization(specialization);
     }
+    
 }
