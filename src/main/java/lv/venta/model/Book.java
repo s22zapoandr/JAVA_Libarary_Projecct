@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
@@ -43,7 +44,7 @@ public class Book {
 	private int rating;
 	
 	@Column(name = "Condition1")
-	private Condition condition1;
+	private Condition condition;
 	
 	@Column(name = "Rarity")
 	private Rarity rarity;
@@ -55,13 +56,13 @@ public class Book {
 	
 	@Min(0)
 	@Max(2024)
-	@Column(name = "Year1")
-	private long year1;
+	@Column(name = "Year")
+	private long year;
 	
 	
 	//Linkage
 	
-	@ManyToOne
+	@ManyToMany
 	@JoinColumn(name = "IdR")
 	private Reader reader;
 	
@@ -69,7 +70,7 @@ public class Book {
 	@JoinColumn(name = "IdLD")
 	private LibraryDepartment libraryDepartment;
 	
-	@ManyToOne
+	@ManyToMany
 	@JoinColumn(name = "IdA")
 	private Author author;
 	
@@ -77,17 +78,18 @@ public class Book {
 	//Functions
 	
 	public void changeCondition(Condition newCondition) {
-		setCondition1(newCondition);
+		setCondition(newCondition);
 	}
 	
 	//Constructor
 	
-	public Book(String title, Author author, int rating, Condition condition, Rarity rarity,int quantity) {
+	public Book(String title, Author author, int rating, Condition condition, Rarity rarity, int quantity, long year) {
 		setTitle(title);
 		setAuthor(author);
 		setRating(rating);
-		setCondition1(condition);
+		setCondition(condition);
 		setRarity(rarity);
 		setQuantity(quantity);
+		setYear(year);
 	}
 }
