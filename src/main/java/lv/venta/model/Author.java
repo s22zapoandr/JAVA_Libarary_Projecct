@@ -8,7 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -32,7 +32,7 @@ public class Author {
 	@Column(name = "IdA")
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long ida;
+	private long idA;
 
 	@NotNull
 	@Pattern(regexp = "[A-Z]{1}[a-z]+")
@@ -50,7 +50,7 @@ public class Author {
 	@Column(name = "Genre")
 	private Genre genre;
 	
-	@OneToMany(mappedBy = "author")
+	@ManyToMany(mappedBy = "author")
 	private Collection<Book> writtenBooks = new ArrayList<Book>();
 	
 	public Author(String name, String surname, Genre genre) {
@@ -60,4 +60,3 @@ public class Author {
 	}
 	
 	
-}
