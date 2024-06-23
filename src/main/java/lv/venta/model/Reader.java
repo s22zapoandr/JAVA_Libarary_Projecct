@@ -8,7 +8,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -31,7 +33,7 @@ public class Reader {
 	@Column(name = "IdR")
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long idr;
+	private long idR;
 
 	@NotNull
 	@Pattern(regexp = "[A-Z]{1}[a-z]+")
@@ -45,28 +47,15 @@ public class Reader {
 	@Column(name = "Surname")
 	private String surname;
 	
+	@ManyToOne
+	@JoinColumn(name = "IdLD")
+	private LibraryDepartment libraryDepartment;
 	
-	@OneToMany(mappedBy = "reader")
+	@ManyToMany(mappedBy = "reader")
 	private Collection<Book> currentTakenBookList = new ArrayList<Book>();
 	
-    @OneToMany(mappedBy = "reader")
-    private Collection<Book> bookHistory = new ArrayList<>();
-
-    // Method to load history
-    public Collection<Book> loadHistory() {
-        return bookHistory;
-    }
-
-    // Method to add a book to history
-    public void addBookToHistory(Book book) throws Exception{
-    	if(currentTakenBookList.contains(book) == false) throw new Exception("No such book found in users current book list");
-    	bookHistory.add(book);
-    }
-	
-    public void returnBookToLibrary(Book book) throws Exception{
-    	if(bookHistory.contains(book) == false) throw new Exception("No such book found in users book history");
-    	bookHistory.remove(book);
-    }
+    	@ManyToMany(mappedBy = "reader")
+   	private Collection<Book> bookHistory = new ArrayList<>();
     
 	public Reader(String name, String surname){
 		setName(name);
@@ -75,3 +64,4 @@ public class Reader {
 	
 
 }
+
