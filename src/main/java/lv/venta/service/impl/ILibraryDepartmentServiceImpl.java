@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LibraryDepartmentServiceImpl implements ILibraryDepartmentService {
+public class ILibraryDepartmentServiceImpl implements ILibraryDepartmentService {
 
     @Autowired
     private IBookRepo bookRepo;
