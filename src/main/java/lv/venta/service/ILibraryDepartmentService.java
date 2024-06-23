@@ -5,10 +5,13 @@ import lv.venta.model.Genre;
 import lv.venta.model.LibraryDepartment;
 import lv.venta.model.Reader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ILibraryDepartmentService {
 
+	void validateWorkingHours() throws Exception;
+	
     void giveBook(Book book, Reader reader) throws Exception;
 
     void takeBook(Book book, Reader reader) throws Exception;
@@ -22,4 +25,8 @@ public interface ILibraryDepartmentService {
     List<Book> getAllBooks();
     
     List<Book> getBookQueueForFutureCheckout();
+
+	void checkOverdueLoans();
+
+	ArrayList<Book> getAllBoksByAuthorId(long IdA) throws Exception;
 }
