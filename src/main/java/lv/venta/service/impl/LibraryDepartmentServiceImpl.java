@@ -103,13 +103,13 @@ public class LibraryDepartmentServiceImpl implements ILibraryDepartmentService {
     }
     
     @Override
-    public List<Book> getAllBooks() {
-        return libraryDepartment.getBookList().stream().collect(Collectors.toList());
+    public ArrayList<Book> getAllBooks() {
+        return (ArrayList<Book>) libraryDepartment.getBookList().stream().collect(Collectors.toList());
     }
 
     @Override
-    public List<Book> getBookQueueForFutureCheckout() {
-        return libraryDepartment.getBookQueueForFutureCheckout().stream().collect(Collectors.toList());
+    public ArrayList<Book> getBookQueueForFutureCheckout() {
+        return (ArrayList<Book>) libraryDepartment.getBookQueueForFutureCheckout().stream().collect(Collectors.toList());
     }
 
 	@Override
@@ -143,5 +143,7 @@ public class LibraryDepartmentServiceImpl implements ILibraryDepartmentService {
     }
  
     
+  
+}
   
 }
