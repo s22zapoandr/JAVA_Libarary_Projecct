@@ -16,4 +16,12 @@ public interface ILoanService {
 
 	void returnBook(Loan loan);
 
+	Loan createLoan(Loan loan);
+
+	Loan updateLoan(long id, Loan loanDetails) throws Exception;
+
+	void deleteLoan(long id) throws Exception;
+
+	Loan getLoanById(long id) throws Exception;
+
 }
