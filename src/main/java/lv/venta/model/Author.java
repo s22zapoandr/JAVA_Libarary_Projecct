@@ -54,9 +54,10 @@ public class Author {
 	private Collection<Book> writtenBooks = new ArrayList<Book>();
 	
 	public Author(String name, String surname, Genre genre) {
-		setName(surname);
+		setName(name);
 		setSurname(surname);
 		setGenre(genre);
 	}
+}
 	
 	
