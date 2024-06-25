@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -63,15 +64,15 @@ public class Book {
 	//Linkage
 	
 	@ManyToMany
-	@JoinColumn(name = "IdR")
+	@JoinTable(name = "Reader", joinColumns = @JoinColumn(name = "IdR"))
 	private Reader reader;
 	
 	@ManyToOne
-	@JoinColumn(name = "IdLD")
+	@JoinTable(name = "LibraryDepartment", joinColumns = @JoinColumn(name = "IdLD"))
 	private LibraryDepartment libraryDepartment;
 	
 	@ManyToMany
-	@JoinColumn(name = "IdA")
+	@JoinTable(name = "Author", joinColumns = @JoinColumn(name = "IdA"))
 	private Author author;
 	
 	
