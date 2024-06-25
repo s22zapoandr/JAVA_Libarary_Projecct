@@ -2,12 +2,14 @@ package lv.venta.service.impl;
 
 import lv.venta.model.Author;
 import lv.venta.model.Book;
+import lv.venta.model.Condition;
 import lv.venta.model.Genre;
 import lv.venta.model.LibraryDepartment;
 import lv.venta.model.Loan;
 import lv.venta.model.Reader;
 import lv.venta.repo.IAuthorRepo;
 import lv.venta.repo.IBookRepo;
+import lv.venta.repo.ILibraryDepartmentRepo;
 import lv.venta.service.ILibraryDepartmentService;
 import lv.venta.service.ILoanService;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,9 +17,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,28 +38,67 @@ public class ILibraryDepartmentServiceImpl implements ILibraryDepartmentService 
     private IAuthorRepo authorRepo;
     
     @Autowired
+    private ILibraryDepartmentRepo libraryDepartmentRepo;
+    
+    @Autowired
     private ILoanService loanService;
     
     private LibraryDepartment libraryDepartment;
+    
+    private Map<Loan, LocalDateTime> warningSent = new ConcurrentHashMap<>();
+	
+    @Override
+	public void validateWorkingHours() throws Exception {
+        LocalDateTime now = LocalDateTime.now();
+        DayOfWeek currentDay = now.getDayOfWeek();
+        LocalTime currentTime = now.toLocalTime();
+
+        if (currentDay == DayOfWeek.SUNDAY || currentDay == DayOfWeek.SATURDAY || 
+            currentTime.isBefore(LocalTime.of(libraryDepartment.getWorkingHoursStart(), 0)) || currentTime.isAfter(LocalTime.of(libraryDepartment.getWorkingHoursEnd(), 0))) {
+            throw new Exception("It is not working hours now");
+        }
+    }
+	
+	
     @Override
     public void giveBook(Book book, Reader reader) throws Exception {
-    	validateWorkingHours();
-        if(reader.getCurrentTakenBookList().contains(book) == false) throw new Exception("The user has already taken this book");
+        validateWorkingHours();
+        // Check if the reader already has the book
+        if (reader.getCurrentTakenBookList().contains(book)) {
+            throw new Exception("The user has already taken this book");
+        }
+        // Check if the reader has overdue loans
         List<Loan> loans = loanService.getAllLoans();
         boolean hasOverdueLoans = loans.stream()
                 .filter(Loan::isOverdue)
                 .anyMatch(loan -> loan.getReader().equals(reader));
-        if(hasOverdueLoans) throw new Exception("The user has overdue loans");
-        if (libraryDepartment.getBookList().contains(book) && book.getQuantity() > 0) {
-        	book.setQuantity(book.getQuantity() - 1);
-            book.setReader(reader);
-            reader.getCurrentTakenBookList().add(book);
-            libraryDepartment.getBookList().remove(book);
-            libraryDepartment.getReaders().add(reader);
-        } else {
-        	libraryDepartment.getBookQueueForFutureCheckout().add(book);
+        if (hasOverdueLoans) {
+            throw new Exception("The user has overdue loans");
         }
+        // Filter books based on condition
+        List<Book> availableBooks = libraryDepartment.getBookList().stream()
+                .filter(b -> b.getTitle().equals(book.getTitle()) && b.getQuantity() > 0)
+                .collect(Collectors.toList());
+        Optional<Book> goodConditionBook = availableBooks.stream()
+                .filter(b -> b.getCondition() == Condition.Good)
+                .findFirst();
+        Optional<Book> moderateConditionBook = availableBooks.stream()
+                .filter(b -> b.getCondition() == Condition.Moderate)
+                .findFirst();
+        // Throw exception if only books with bad condition are available
+        if (availableBooks.stream().allMatch(b -> b.getCondition() == Condition.Bad)) {
+            throw new Exception("All available copies of this book are in bad condition");
+        }
+        // Get the best available book
+        Book bookToGive = goodConditionBook.orElse(moderateConditionBook.orElseThrow(() -> new Exception("No suitable books available")));
+        // Update book and reader details
+        bookToGive.setQuantity(bookToGive.getQuantity() - 1);
+        bookToGive.setReader(reader);
+        reader.getCurrentTakenBookList().add(bookToGive);
+        libraryDepartment.getBookList().remove(bookToGive);
+        libraryDepartment.getReaders().add(reader);
     }
+
 
     @Override
     public void takeBook(Book book, Reader reader) throws Exception{
@@ -103,39 +147,69 @@ public class ILibraryDepartmentServiceImpl implements ILibraryDepartmentService 
     }
 	
 	@Override
-	public void validateWorkingHours() throws Exception {
-        LocalDateTime now = LocalDateTime.now();
-        DayOfWeek currentDay = now.getDayOfWeek();
-        LocalTime currentTime = now.toLocalTime();
-
-        if (currentDay == DayOfWeek.SUNDAY || currentDay == DayOfWeek.SATURDAY || 
-            currentTime.isBefore(LocalTime.of(libraryDepartment.getWorkingHoursStart(), 0)) || currentTime.isAfter(LocalTime.of(libraryDepartment.getWorkingHoursEnd(), 0))) {
-            throw new Exception("It is not working hours now");
-        }
-    }
-	
-	@Override
     @Scheduled(cron = "0 0 0 * * ?")  // Runs every day at midnight
     public void checkOverdueLoans() {
         List<Loan> overdueLoans = loanService.getOverdueLoans();
         for (Loan loan : overdueLoans) {
             try {
-                takeBook(loan.getBook(), loan.getReader());
+                if (warningSent.containsKey(loan)) {
+                    LocalDateTime warningTime = warningSent.get(loan);
+                    if (ChronoUnit.DAYS.between(warningTime, LocalDateTime.now()) >= 3) {
+                        takeBook(loan.getBook(), loan.getReader());
+                    }
+                } else {
+                    // Send warning message to the user
+                    warningSent.put(loan, LocalDateTime.now());
+                }
             } catch (Exception e) {
-                // Handle exception 
+                e.printStackTrace();
             }
         }
-    }	
+    }
 
 	@Override
-    public ArrayList<Book> getAllBooksByAuthorId(long IdA) throws Exception{
+    public ArrayList<Book> getAllBoksByAuthorId(long IdA) throws Exception{
     	Optional<Author> author = authorRepo.findById(IdA);
     	if(!author.isPresent()) {
-    		throw new Exception("Driver with this id is not registered in system");
+    		throw new Exception("Author with this id is not registered in system");
     	}
     	else {
     		ArrayList<Book> result = bookRepo.findWrittenBooksByIdA(IdA);
     		return result;
     	}
-	}
+    }
+ 
+	// CRUD methods
+    @Override
+    public ArrayList<LibraryDepartment> getAllLibraryDepartments() throws Exception {
+        return (ArrayList<LibraryDepartment>) libraryDepartmentRepo.findAll();
+    }
+
+    @Override
+    public LibraryDepartment getLibraryDepartmentById(Long idLD) throws Exception {
+        Optional<LibraryDepartment> department = libraryDepartmentRepo.findById(idLD);
+        if (!department.isPresent()) {
+            throw new Exception("Library Department with this id does not exist");
+        }
+        return department.get();
+    }
+
+    @Override
+    public void deleteLibraryDepartmentById(Long idLD) throws Exception {
+        if (!libraryDepartmentRepo.existsById(idLD)) {
+            throw new Exception("Library Department with this id does not exist");
+        }
+        libraryDepartmentRepo.deleteById(idLD);
+    }
+
+    @Override
+    public void updateLibraryDepartmentById(Long idLD, Genre specialization) throws Exception {
+        Optional<LibraryDepartment> updateDepartment = libraryDepartmentRepo.findById(idLD);
+        if (!updateDepartment.isPresent()) {
+            throw new Exception("Library Department with this id does not exist");
+        }
+        LibraryDepartment department = updateDepartment.get();
+        department.setSpecialization(specialization);
+        libraryDepartmentRepo.save(department);
+    }
 }
