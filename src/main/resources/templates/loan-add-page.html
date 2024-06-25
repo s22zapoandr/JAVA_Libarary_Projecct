@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Loan</title>
+</head>
+<body>
+    <h1>Add Loan</h1>
+    <form th:action="@{/loans/add}" th:object="${loan}" method="post">
+        <p>Book ID: <input type="text" th:field="*{book.id}" /></p>
+        <p>Reader ID: <input type="text" th:field="*{reader.id}" /></p>
+        <p>Loan Date: <input type="date" th:field="*{loanDate}" /></p>
+        <p>Due Date: <input type="date" th:field="*{dueDate}" /></p>
+        <button type="submit">Add Loan</button>
+    </form>
+    <a href="/loans/show/all">Back to All Loans</a>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE<!DOCTYPE html>
+<html>
+<head>
+    <title>All Loans</title>
+</head>
+<body>
+    <h1>All Loans</h1>
+    <ul>
+        <li th:each="loan : ${loans}">
+            <a th:href="@{/loans/show/{id}(id=${loan.id})}" th:text="${loan.id}">Loan ID</a> - <span th:text="${loan.book.title}">Book Title</span> - <span th:text="${loan.reader.name}">Reader Name</span>
+        </li>
+    </ul>
+    <a href="/loans/add">Add New Loan</a>
+</body>
+</html>
+ html>
+<html>
+<head>
+    <title>All Loans</title>
+</head>
+<body>
+    <h1>All Loans</h1>
+    <ul>
+        <li th:each="loan : ${loans}">
+            <a th:href="@{/loans/show/{id}(id=${loan.id})}" th:text="${loan.id}">Loan ID</a> - <span th:text="${loan.book.title}">Book Title</span> - <span th:text="${loan.reader.name}">Reader Name</span>
+        </li>
+    </ul>
+    <a href="/loans/add">Add New Loan</a>
+</body>
+</html>

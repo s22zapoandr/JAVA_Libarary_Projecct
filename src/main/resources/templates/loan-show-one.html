@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loan Details</title>
+</head>
+<body>
+    <h1>Loan Details</h1>
+    <p>ID: <span th:text="${loan.id}">Loan ID</span></p>
+    <p>Book: <span th:text="${loan.book.title}">Book Title</span></p>
+    <p>Reader: <span th:text="${loan.reader.name}">Reader Name</span></p>
+    <p>Loan Date: <span th:text="${loan.loanDate}">Loan Date</span></p>
+    <p>Due Date: <span th:text="${loan.dueDate}">Due Date</span></p>
+    <a th:href="@{/loans/update/{id}(id=${loan.id})}">Update</a>
+    <a th:href="@{/loans/delete/{id}(id=${loan.id})}">Delete</a>
+    <a href="/loans/show/all">Back to All Loans</a>
+</body>
+</html>
