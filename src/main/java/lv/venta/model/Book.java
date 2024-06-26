@@ -1,96 +1,79 @@
 package lv.venta.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-@Table(name = "BookList")
 @Entity
-public class Book {
-	@Setter(value = AccessLevel.NONE)
-	@Column(name = "IdB")
-	@jakarta.persistence.Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long idb;
-	
-	@NotNull
-	@Pattern(regexp = "[A-Za-z ]+")
-	@Size(min = 4, max = 50)
-	@Column(name = "Title")
-	private String title;
-	
-	@Min(1)
-	@Max(10)
-	@Column(name = "Rating")
-	private int rating;
-	
-	@Column(name = "Condition1")
-	private Condition condition;
-	
-	@Column(name = "Rarity")
-	private Rarity rarity;
-	
-	@Min(1)
-	@Max(15)
-	@Column(name = "Quantity")
-	private int quantity;
-	
-	@Min(0)
-	@Max(2024)
-	@Column(name = "Year")
-	private long year;
-	
-	
-	//Linkage
-	
-	@ManyToMany
-	@JoinTable(name = "Reader", joinColumns = @JoinColumn(name = "IdR"))
-	private Reader reader;
-	
-	@ManyToOne
-	@JoinTable(name = "LibraryDepartment", joinColumns = @JoinColumn(name = "IdLD"))
-	private LibraryDepartment libraryDepartment;
-	
-	@ManyToMany
-	@JoinTable(name = "Author", joinColumns = @JoinColumn(name = "IdA"))
-	private Author author;
-	
-	
-	//Functions
-	
-	public void changeCondition(Condition newCondition) {
-		setCondition(newCondition);
-	}
-	
-	//Constructor
-	
-	public Book(String title, Author author, int rating, Condition condition, Rarity rarity, int quantity, long year) {
-		setTitle(title);
-		setAuthor(author);
-		setRating(rating);
-		setCondition(condition);
-		setRarity(rarity);
-		setQuantity(quantity);
-		setYear(year);
-	}
+@Table(name = "BookList")
+public class Book implements Serializable{
+
+    private static final long serialVersionUID = 1L;
+
+	@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "IdB")
+    private long idb;
+
+    @NotNull
+    @Pattern(regexp = "[A-Za-z ]+")
+    @Size(min = 4, max = 50)
+    @Column(name = "Title")
+    private String title;
+
+    @Min(1)
+    @Max(10)
+    @Column(name = "Rating")
+    private int rating;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Condition1")
+    private Condition condition;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Rarity")
+    private Rarity rarity;
+
+    @Min(1)
+    @Max(15)
+    @Column(name = "Quantity")
+    private int quantity;
+
+    @Min(0)
+    @Max(2024)
+    @Column(name = "Year")
+    private int year;
+
+    @ManyToMany
+    @JoinTable(
+        name = "Book_Author",
+        joinColumns = @JoinColumn(name = "book_id"),
+        inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private List<Author> authors;
+
+    @ManyToOne
+    @JoinColumn(name = "library_department_id")
+    private LibraryDepartment libraryDepartment;
+
+    // Constructor
+    public Book(String title, List<Author> authors, int rating, Condition condition, Rarity rarity, int quantity, int year) {
+        this.title = title;
+        this.authors = authors;
+        this.rating = rating;
+        this.condition = condition;
+        this.rarity = rarity;
+        this.quantity = quantity;
+        this.year = year;
+    }
 }
