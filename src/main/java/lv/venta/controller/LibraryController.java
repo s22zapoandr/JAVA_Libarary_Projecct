@@ -1,7 +1,13 @@
 package lv.venta.controller;
 
+import lv.venta.model.Author;
 import lv.venta.model.Book;
+import lv.venta.repo.IAuthorRepo;
 import lv.venta.service.ILibraryDepartmentService;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +23,9 @@ public class LibraryController {
     @Autowired
     private ILibraryDepartmentService libraryService;
 
+    @Autowired
+    private IAuthorRepo authorRepo;
+    
     // Was
     @GetMapping("/filter/grade/failed")
     public String getFilterGradeFailed(Model model) {
@@ -28,27 +37,38 @@ public class LibraryController {
         }
     }
 
-    // New(Need to check)
     @GetMapping("/books")
     public String viewBooks(Model model) {
         model.addAttribute("books", libraryService.getAllBooks());
         return "books";
     }
 
-    // New(Need to check)
     @GetMapping("/add-book")
     public String showAddBookForm() {
         return "add-book";
     }
 
-    // New(Need to check)
     @PostMapping("/add-book")
-    public String addBook(@RequestParam String title, @RequestParam String author, @RequestParam int quantity) throws Exception {
+    public String addBook(@RequestParam String title, @RequestParam List<Long> authorIds, @RequestParam int quantity) throws Exception {
+        List<Author> authors = new ArrayList<>();
+        try {
+            authors = authorRepo.findAllById(authorIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Error fetching authors", e);
+        }
+
+        if (authors.isEmpty()) {
+            throw new Exception("No authors found for the given IDs");
+        }
+
         Book book = new Book();
         book.setTitle(title);
-        book.setAuthor(author);
+        book.setAuthors(authors);
         book.setQuantity(quantity);
         libraryService.addBook(book);
+
         return "redirect:/library/books";
     }
 }
+
