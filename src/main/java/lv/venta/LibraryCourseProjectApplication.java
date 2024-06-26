@@ -3,7 +3,6 @@ package lv.venta;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,6 +14,8 @@ import lv.venta.model.LibraryDepartment;
 import lv.venta.model.Rarity;
 import lv.venta.repo.IAuthorRepo;
 import lv.venta.repo.IBookRepo;
+
+import java.util.Arrays;
 
 @SpringBootApplication
 public class LibraryCourseProjectApplication {
@@ -34,15 +35,19 @@ public class LibraryCourseProjectApplication {
     }
 
     @Bean
-    public CommandLineRunner dataInitializer(IAuthorRepo authorRepo, IBookRepo bookRepo) {
+    public CommandLineRunner dataInitializer(IAuthorRepo authorRepo, IBookRepo bookRepo, LibraryDepartment libraryDepartment) {
         return args -> {
             Author author1 = new Author("Joanne", "Rowling", Genre.Fantasy);
             Author author2 = new Author("John", "Tolkien", Genre.Fantasy);
             authorRepo.save(author1);
             authorRepo.save(author2);
 
-            Book book1 = new Book("Harry Potter and the Philosopher's Stone", author1, 9, Condition.Good, Rarity.Common , 25, 1997);
-            Book book2 = new Book("The Hobbit", author2, 8, Condition.Moderate, Rarity.Rare , 13, 1937);
+            Book book1 = new Book("Harry Potter and the Philosopher's Stone", Arrays.asList(author1), 9, Condition.Good, Rarity.Common, 25, 1997);
+            Book book2 = new Book("The Hobbit", Arrays.asList(author2), 8, Condition.Moderate, Rarity.Rare, 13, 1937);
+
+            book1.setLibraryDepartment(libraryDepartment);
+            book2.setLibraryDepartment(libraryDepartment);
+
             bookRepo.save(book1);
             bookRepo.save(book2);
         };
