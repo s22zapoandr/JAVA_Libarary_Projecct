@@ -33,18 +33,19 @@ public class ILibraryDepartmentServiceImpl implements ILibraryDepartmentService 
 
     @Autowired
     private IBookRepo bookRepo;
-    
+
     @Autowired
     private IAuthorRepo authorRepo;
-    
+
     @Autowired
     private ILibraryDepartmentRepo libraryDepartmentRepo;
-    
+
     @Autowired
     private ILoanService loanService;
-    
+
+    @Autowired
     private LibraryDepartment libraryDepartment;
-    
+
     private Map<Loan, LocalDateTime> warningSent = new ConcurrentHashMap<>();
 	
     @Override
@@ -63,11 +64,11 @@ public class ILibraryDepartmentServiceImpl implements ILibraryDepartmentService 
     @Override
     public void giveBook(Book book, Reader reader) throws Exception {
         validateWorkingHours();
-        // Check if the reader already has the book
+
         if (reader.getCurrentTakenBookList().contains(book)) {
             throw new Exception("The user has already taken this book");
         }
-        // Check if the reader has overdue loans
+
         List<Loan> loans = loanService.getAllLoans();
         boolean hasOverdueLoans = loans.stream()
                 .filter(Loan::isOverdue)
@@ -75,47 +76,52 @@ public class ILibraryDepartmentServiceImpl implements ILibraryDepartmentService 
         if (hasOverdueLoans) {
             throw new Exception("The user has overdue loans");
         }
-        // Filter books based on condition
-        List<Book> availableBooks = libraryDepartment.getBookList().stream()
-                .filter(b -> b.getTitle().equals(book.getTitle()) && b.getQuantity() > 0)
-                .collect(Collectors.toList());
+
+        List<Book> availableBooks = bookRepo.findByTitleAndQuantityGreaterThan(book.getTitle(), 0);
         Optional<Book> goodConditionBook = availableBooks.stream()
                 .filter(b -> b.getCondition() == Condition.Good)
                 .findFirst();
         Optional<Book> moderateConditionBook = availableBooks.stream()
                 .filter(b -> b.getCondition() == Condition.Moderate)
                 .findFirst();
-        // Throw exception if only books with bad condition are available
         if (availableBooks.stream().allMatch(b -> b.getCondition() == Condition.Bad)) {
             throw new Exception("All available copies of this book are in bad condition");
         }
-        // Get the best available book
+
         Book bookToGive = goodConditionBook.orElse(moderateConditionBook.orElseThrow(() -> new Exception("No suitable books available")));
-        // Update book and reader details
         bookToGive.setQuantity(bookToGive.getQuantity() - 1);
-        bookToGive.setReader(reader);
+
         reader.getCurrentTakenBookList().add(bookToGive);
         libraryDepartment.getBookList().remove(bookToGive);
-        libraryDepartment.getReaders().add(reader);
+
+        bookRepo.save(bookToGive);
+        libraryDepartmentRepo.save(libraryDepartment);
     }
 
 
     @Override
-    public void takeBook(Book book, Reader reader) throws Exception{
+    public void takeBook(Book book, Reader reader) throws Exception {
         validateWorkingHours();
+
         List<Loan> loans = loanService.getAllLoans();
-        Loan loan = loans.stream().filter(l -> l.getBook().equals(book) && l.getReader().equals(reader)).findFirst().orElse(null);
-        
+        Loan loan = loans.stream()
+                .filter(l -> l.getBook().equals(book) && l.getReader().equals(reader))
+                .findFirst()
+                .orElse(null);
+
         if (loan == null) {
             throw new Exception("This reader did not take this book");
         }
-        
+
         loanService.returnBook(loan);
         book.setQuantity(book.getQuantity() + 1);
         reader.getCurrentTakenBookList().remove(book);
         reader.getBookHistory().add(book);
+
         libraryDepartment.getBookList().add(book);
-        libraryDepartment.getReaders().remove(reader);
+
+        bookRepo.save(book);
+        libraryDepartmentRepo.save(libraryDepartment);
     }
 
     
@@ -133,7 +139,7 @@ public class ILibraryDepartmentServiceImpl implements ILibraryDepartmentService 
     
     @Override
     public ArrayList<Book> getAllBooks() {
-        return (ArrayList<Book>) libraryDepartment.getBookList().stream().collect(Collectors.toList());
+        return (ArrayList<Book>) bookRepo.findAll();
     }
 
     @Override
