@@ -1,25 +1,11 @@
 package lv.venta.model;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Collection;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.HashSet;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Getter
 @Setter
@@ -27,41 +13,49 @@ import lombok.ToString;
 @ToString
 @Table(name = "Reader")
 @Entity
-public class Reader {
-	
+public class Reader implements Serializable {
+    private static final long serialVersionUID = 1L;
+
 	@Setter(value = AccessLevel.NONE)
-	@Column(name = "IdR")
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long idR;
+    @Column(name = "IdR")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long idR;
 
-	@NotNull
-	@Pattern(regexp = "[A-Z]{1}[a-z]+")
-	@Size(min = 2, max = 10)
-	@Column(name = "Name")
-	private String name;
-	
-	@NotNull
-	@Pattern(regexp = "[A-Z]{1}[a-z]+")
-	@Size(min = 2, max = 20)
-	@Column(name = "Surname")
-	private String surname;
-	
-	@ManyToOne
-	@JoinColumn(name = "IdLD")
-	private LibraryDepartment libraryDepartment;
-	
-	@ManyToMany(mappedBy = "reader")
-	private Collection<Book> currentTakenBookList = new ArrayList<Book>();
-	
-    	@ManyToMany(mappedBy = "reader")
-   	private Collection<Book> bookHistory = new ArrayList<>();
+    @NotNull
+    @Pattern(regexp = "[A-Z][a-z]+")
+    @Size(min = 2, max = 10)
+    @Column(name = "Name")
+    private String name;
     
-	public Reader(String name, String surname){
-		setName(name);
-		setSurname(surname);
-	}
-	
-
+    @NotNull
+    @Pattern(regexp = "[A-Z][a-z]+")
+    @Size(min = 2, max = 20)
+    @Column(name = "Surname")
+    private String surname;
+    
+    @ManyToOne
+    @JoinColumn(name = "IdLD")
+    private LibraryDepartment libraryDepartment;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "ReaderCurrentBook",
+        joinColumns = @JoinColumn(name = "IdR"),
+        inverseJoinColumns = @JoinColumn(name = "IdB")
+    )
+    private Collection<Book> currentTakenBookList = new HashSet<>();
+    
+    @ManyToMany
+    @JoinTable(
+        name = "ReaderBookHistory",
+        joinColumns = @JoinColumn(name = "IdR"),
+        inverseJoinColumns = @JoinColumn(name = "IdB")
+    )
+    private Collection<Book> bookHistory = new HashSet<>();
+    
+    public Reader(String name, String surname){
+        setName(name);
+        setSurname(surname);
+    }
 }
-
