@@ -1,63 +1,50 @@
 package lv.venta.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
+
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-@Table(name = "Author")
 @Entity
-public class Author {
-	
-	@Setter(value = AccessLevel.NONE)
-	@Column(name = "IdA")
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long idA;
+@Table(name = "Author")
+public class Author implements Serializable{
 
-	@NotNull
-	@Pattern(regexp = "[A-Z]{1}[a-z]+")
-	@Size(min = 2, max = 10)
-	@Column(name = "Name")
-	private String name;
-	
-	@NotNull
-	@Pattern(regexp = "[A-Z]{1}[a-z]+")
-	@Size(min = 2, max = 20)
-	@Column(name = "Surname")
-	private String surname;
-	
-	@NotNull
-	@Column(name = "Genre")
-	private Genre genre;
-	
-	@ManyToMany(mappedBy = "author")
-	private Collection<Book> writtenBooks = new ArrayList<Book>();
-	
-	public Author(String name, String surname, Genre genre) {
-		setName(name);
-		setSurname(surname);
-		setGenre(genre);
-	}
+    private static final long serialVersionUID = 1L;
+
+	@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "IdA")
+    private long idA;
+
+    @NotNull
+    @Pattern(regexp = "[A-Z]{1}[a-z]+")
+    @Size(min = 2, max = 10)
+    @Column(name = "Name")
+    private String name;
+
+    @NotNull
+    @Pattern(regexp = "[A-Z]{1}[a-z]+")
+    @Size(min = 2, max = 20)
+    @Column(name = "Surname")
+    private String surname;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Genre")
+    private Genre genre;
+
+    @ManyToMany(mappedBy = "authors")
+    private List<Book> writtenBooks = new ArrayList<>();
+
+    public Author(String name, String surname, Genre genre) {
+        this.name = name;
+        this.surname = surname;
+        this.genre = genre;
+    }
 }
-	
-	
