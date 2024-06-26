@@ -1,6 +1,8 @@
 package lv.venta.controller;
 
+import lv.venta.model.Book;
 import lv.venta.model.Loan;
+import lv.venta.model.Reader;
 import lv.venta.service.ILoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,8 +44,8 @@ public class LoanController {
     }
 
     @PostMapping("/add")
-    public String addLoan(@ModelAttribute Loan loan, Model model) {
-        loanService.createLoan(loan);
+    public String addLoan(@ModelAttribute Book book, Reader reader, Model model) {
+        loanService.createLoan(book, reader);
         return "redirect:/loans/show/all";
     }
 
@@ -81,4 +83,3 @@ public class LoanController {
         }
     }
 }
-
