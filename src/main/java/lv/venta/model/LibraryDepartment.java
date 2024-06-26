@@ -1,21 +1,10 @@
-
 package lv.venta.model;
 
-
-import java.util.ArrayList;
 import java.util.Collection;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.HashSet;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Getter
 @Setter
@@ -24,7 +13,6 @@ import lombok.ToString;
 @Table(name = "LibraryDepartment")
 @Entity
 public class LibraryDepartment {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "IdLD")
@@ -40,34 +28,29 @@ public class LibraryDepartment {
 
     @NotNull
     @Column(name = "WorkingHoursEnd")
-    private int workingHoursEnd ; 
+    private int workingHoursEnd; 
 
     @OneToMany(mappedBy = "libraryDepartment")
-    private Collection<Reader> readers = new ArrayList<>(); 
+    private Collection<Reader> readers = new HashSet<>(); 
     
     @OneToMany(mappedBy = "libraryDepartment")
-    private Collection<Book> bookList = new ArrayList<>();
+    private Collection<Book> bookList = new HashSet<>();
 
     @OneToMany(mappedBy = "libraryDepartment")
-    private Collection<Book> bookQueueForFutureCheckout = new ArrayList<>();
+    private Collection<Book> bookQueueForFutureCheckout = new HashSet<>();
 
-	
-	
-	//Override
-	public void setWorkingHoursStart() {
-		this.workingHoursStart = 9;
-	}
-	
-	public void setWorkingHoursEnd() {
-		this.workingHoursEnd = 17;
-	}
-	
-    
-    
-    public LibraryDepartment(Genre specialization) {
-    	setWorkingHoursStart();
-    	setWorkingHoursEnd();
-    	setSpecialization(specialization);
+    // Override
+    public void setWorkingHoursStart() {
+        this.workingHoursStart = 9;
     }
     
+    public void setWorkingHoursEnd() {
+        this.workingHoursEnd = 17;
+    }
+    
+    public LibraryDepartment(Genre specialization) {
+        setWorkingHoursStart();
+        setWorkingHoursEnd();
+        this.specialization = specialization;
+    }
 }
