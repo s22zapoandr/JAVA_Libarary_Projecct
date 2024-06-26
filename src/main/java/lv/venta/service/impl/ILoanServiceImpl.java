@@ -19,14 +19,6 @@ public class ILoanServiceImpl implements ILoanService {
     private ILoanRepository loanRepository;
 
     @Override
-    public void loanBook(Book book, Reader reader) {
-        LocalDate today = LocalDate.now();
-        LocalDate dueDate = today.plusDays(100);
-        Loan loan = new Loan(book, reader, today, dueDate);
-        loanRepository.save(loan);
-    }
-
-    @Override
     public void returnBook(Loan loan) {
         loanRepository.delete(loan);
     }
@@ -44,8 +36,12 @@ public class ILoanServiceImpl implements ILoanService {
 
     // CRUD methods
     @Override
-    public Loan createLoan(Loan loan) {
-        return loanRepository.save(loan);
+    public Loan createLoan(Book book, Reader reader) {
+        LocalDate today = LocalDate.now();
+        LocalDate dueDate = today.plusDays(100);
+        Loan loan = new Loan(book, reader, today, dueDate);
+        loanRepository.save(loan);
+        return loan;
     }
 
     @Override
@@ -77,5 +73,7 @@ public class ILoanServiceImpl implements ILoanService {
         return loanRepository.findById(id).orElseThrow(() -> new Exception("Loan not found with id: " + id));
     }
 }
+
+
 
 
