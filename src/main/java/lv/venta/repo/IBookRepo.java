@@ -6,6 +6,7 @@ import lv.venta.model.Genre;
 import lv.venta.model.Rarity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -26,4 +27,6 @@ public interface IBookRepo extends JpaRepository<Book, Long> {
 	ArrayList<Book> findByRating(int rating);
 	
 	ArrayList<Book> findByYear(long year);
+
+	List<Book> findByTitleAndQuantityGreaterThan(String title, int i);
 }
