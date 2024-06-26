@@ -7,16 +7,14 @@ import lv.venta.model.Loan;
 import lv.venta.model.Reader;
 
 public interface ILoanService {
-
-	void loanBook(Book book, Reader reader);
-
+	
 	ArrayList<Loan> getOverdueLoans();
 
 	ArrayList<Loan> getAllLoans();
 
 	void returnBook(Loan loan);
 
-	Loan createLoan(Loan loan);
+	Loan createLoan(Book book, Reader reader);
 
 	Loan updateLoan(long id, Loan loanDetails) throws Exception;
 
@@ -25,3 +23,4 @@ public interface ILoanService {
 	Loan getLoanById(long id) throws Exception;
 
 }
+
