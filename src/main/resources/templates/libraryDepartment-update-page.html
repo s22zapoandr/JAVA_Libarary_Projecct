@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Update Library Department</title>
+</head>
+<body>
+    <h1>Update Library Department</h1>
+    <form action="#" th:action="@{/libraryDepartment/update/{id}(id=${department.id})}" th:object="${libraryDepartment}" method="post">
+        <label for="specialization">Specialization:</label>
+        <input type="text" id="specialization" name="specialization" th:field="*{specialization}" required><br>
+        <button type="submit">Update Library Department</button>
+    </form>
+    <a href="/libraryDepartment/show/all/">Back to All Library Departments</a>
+</body>
+</html>
