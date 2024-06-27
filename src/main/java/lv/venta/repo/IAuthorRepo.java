@@ -5,8 +5,6 @@ import lv.venta.model.Genre;
 
 import java.util.ArrayList;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 public interface IAuthorRepo extends CrudRepository<Author, Long> {
 
 	ArrayList<Author> findAllByGenre(Genre genre);
