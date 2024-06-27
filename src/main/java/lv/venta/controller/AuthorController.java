@@ -19,11 +19,11 @@ public class AuthorController {
     @Autowired
     private AuthorCRUDService authorService;
 
-    @GetMapping("/show/all/")
+    @GetMapping("/show/all")
     public String getAllAuthors(Model model) {
         try {
-            ArrayList<Author> drivers = authorService.selectAllAuthors();
-            model.addAttribute("drivers", drivers);
+            ArrayList<Author> authors = authorService.selectAllAuthors();
+            model.addAttribute("authors", authors);
             return "author-show-all";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
@@ -31,7 +31,7 @@ public class AuthorController {
         }
     }
 
-    @GetMapping("/show/all/{idA}")
+    @GetMapping("/show/{idA}")
     public String getAuthorById(@PathVariable("idA") Long idA, Model model) {
         try {
             Author author = authorService.selectAuthorById(idA);
@@ -44,7 +44,7 @@ public class AuthorController {
     }
 
 
-    @GetMapping("/remove/{idP}")
+    @GetMapping("/remove/{idA}")
     public String removeAuthorById(@PathVariable("idA") Long idA, Model model) {
         try {
             authorService.deleteAuthorById(idA);
@@ -58,15 +58,15 @@ public class AuthorController {
 
     @GetMapping("/add")
     public String getAuthorForm(Model model) {
-        model.addAttribute("Author", new Author());
+        model.addAttribute("author", new Author());
         return "author-add-page";
     }
 
     @PostMapping("/add")
-    public String addAuthor(@ModelAttribute String name, String surname, Genre genre, Model model) {
+    public String addAuthor(@ModelAttribute("author") Author author, Model model) {
         try {
-            authorService.insertNewAuthor(name, surname, genre);
-            return "redirect:/driver/show/all";
+            authorService.insertNewAuthor(author.getName(), author.getSurname(), author.getGenre());
+            return "redirect:/author/show/all";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "error-page";
@@ -74,12 +74,12 @@ public class AuthorController {
     }
 
    
-    @GetMapping("/update/{idP}")
-    public String getUpdateDriverForm(@PathVariable("idA") Long idA, Model model) {
+    @GetMapping("/update/{idA}")
+    public String getUpdateAuthorForm(@PathVariable("idA") Long idA, Model model) {
         try {
             Author author = authorService.selectAuthorById(idA);
-            model.addAttribute("Author", author);
-            return "driver-update-page";
+            model.addAttribute("author", author);
+            return "author-update-page";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "error-page";
@@ -89,12 +89,11 @@ public class AuthorController {
     @PostMapping("/update/{idA}")
     public String updateAuthorById(@PathVariable("idA") Long idA, String name, String surname, Genre genre, Model model) {
         try {
-            authorService.updateAuthorById(idA, name,  surname, genre);
-            return "redirect:/driver/show/all";
+            authorService.updateAuthorById(idA, name, surname, genre);
+            return "redirect:/author/show/all";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "error-page";
-     
         }
-}}
-
+    }
+}
