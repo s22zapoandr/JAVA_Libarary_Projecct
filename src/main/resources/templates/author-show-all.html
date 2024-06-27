@@ -14,14 +14,14 @@
             <th>Actions</th>
         </tr>
         <tr th:each="author : ${authors}">
-            <td th:text="${author.id}"></td>
+            <td th:text="${author.idA}"></td>
             <td th:text="${author.name}"></td>
             <td th:text="${author.surname}"></td>
             <td th:text="${author.genre}"></td>
             <td>
-                <a th:href="@{/author/show/all/{id}(id=${author.id})}">View</a>
-                <a th:href="@{/author/update/{id}(id=${author.id})}">Edit</a>
-                <a th:href="@{/author/remove/{id}(id=${author.id})}">Delete</a>
+                <a th:href="@{/author/show/{id}(id=${author.idA})}">View</a>
+                <a th:href="@{/author/update/{id}(id=${author.idA})}">Edit</a>
+                <a th:href="@{/author/remove/{id}(id=${author.idA})}">Delete</a>
             </td>
         </tr>
     </table>
