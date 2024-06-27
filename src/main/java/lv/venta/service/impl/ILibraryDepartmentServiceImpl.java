@@ -92,7 +92,7 @@ public class ILibraryDepartmentServiceImpl implements ILibraryDepartmentService 
         bookToGive.setQuantity(bookToGive.getQuantity() - 1);
 
         reader.getCurrentTakenBookList().add(bookToGive);
-        libraryDepartment.getBookList().remove(bookToGive);
+        libraryDepartment.getBook_List().remove(bookToGive);
 
         bookRepo.save(bookToGive);
         libraryDepartmentRepo.save(libraryDepartment);
@@ -118,7 +118,7 @@ public class ILibraryDepartmentServiceImpl implements ILibraryDepartmentService 
         reader.getCurrentTakenBookList().remove(book);
         reader.getBookHistory().add(book);
 
-        libraryDepartment.getBookList().add(book);
+        libraryDepartment.getBook_List().add(book);
 
         bookRepo.save(book);
         libraryDepartmentRepo.save(libraryDepartment);
@@ -128,13 +128,13 @@ public class ILibraryDepartmentServiceImpl implements ILibraryDepartmentService 
     @Override
     public void addBook(Book book) throws Exception {
     	validateWorkingHours();
-    	libraryDepartment.getBookList().add(book);
+    	libraryDepartment.getBook_List().add(book);
     }
 
     @Override
     public void removeBook(Book book) throws Exception {
     	validateWorkingHours();
-    	libraryDepartment.getBookList().remove(book);
+    	libraryDepartment.getBook_List().remove(book);
     }
     
     @Override
