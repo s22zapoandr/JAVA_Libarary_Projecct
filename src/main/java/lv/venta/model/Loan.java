@@ -18,7 +18,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-@Table(name = "BookList")
+@Table(name = "Loan")
 @Entity
 public class Loan {
 	
